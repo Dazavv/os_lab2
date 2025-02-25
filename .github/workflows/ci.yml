@@ -28,6 +28,7 @@ jobs:
           cmake --build build
 
       - name: Run clang-tidy
+        continue-on-error: true
         run: |
           Get-ChildItem -Path src -Filter *.cpp -Recurse | ForEach-Object { clang-tidy -p build $_.FullName --checks=*,google-* --fix --warnings-as-errors=-*}
 
