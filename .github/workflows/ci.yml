@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - lab-1
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          choco install -y cmake llvm ninja cppcheck
+          echo "Dependencies installed"
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+
+      - name: Build the project
+        run: |
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -S . -B build
+          cmake --build build
+
+      - name: Run clang-tidy
+        run: |
+          Get-ChildItem -Path src -Filter *.cpp -Recurse | ForEach-Object { clang-tidy -p build $_.FullName --checks=*,google-* --fix }
+
+      - name: Run clang-format
+        run: |
+          Get-ChildItem -Path src -Filter *.cpp -Recurse | ForEach-Object { clang-format -i $_.FullName }
+          Get-ChildItem -Path src -Filter *.h -Recurse | ForEach-Object { clang-format -i $_.FullName }
+
+      - name: Run smoke tests
+        run: |
+          .\build\tests.exe
