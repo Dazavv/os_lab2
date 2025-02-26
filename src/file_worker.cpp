@@ -64,16 +64,13 @@ off_t lab2_lseek(int fd, off_t offset, int whence) {
         return -1;
     }
 
-    // Проверяем, существует ли файл в нашей карте
     if (file_map.find(fd) == file_map.end()) {
         std::cerr << "Error: Invalid file descriptor" << std::endl;
         return -1;
     }
 
-    // Устанавливаем новое смещение в кэше
     file_map[fd].current_offset = offset;
-
-    return offset;  // Возвращаем новое смещение
+    return offset;
 }
 
 // Синхронизация данных из кэша с диском

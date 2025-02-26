@@ -105,14 +105,9 @@ void cache_write(int fd, off_t offset, const char *buf, size_t count) {
         size_t page_offset = (offset + bytes_written) % BLOCK_SIZE;
         size_t to_copy = std::min(count - bytes_written, BLOCK_SIZE - page_offset);
         std::memcpy(cache.pages[i].data + page_offset, buf + bytes_written, to_copy);
-//        size_t to_copy = std::min(count - bytes_written, (size_t)BLOCK_SIZE);
-//        std::memcpy(cache.pages[i].data, buf + bytes_written, to_copy);
-
         bytes_written += to_copy;
 
     }
-//    offset += bytes_written;
-//    _lseek(fd, *offset, SEEK_SET);
 }
 
 
