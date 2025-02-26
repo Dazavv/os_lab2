@@ -20,7 +20,6 @@ add_executable(tests
         src/tests/test_io_lat_write.cpp
         src/io_lat_write_w_cash.cpp
         src/io_lat_write.cpp
-#        src/tests/test_fw.cpp
         src/file_worker.cpp
         src/tools.cpp)
 

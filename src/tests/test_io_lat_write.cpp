@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <chrono>
 #include <fstream>
+#include <iostream>
+#include <cstdio>
 
 #include "../../include/file_worker.h"
 #include "../../include/cache.h"
@@ -27,7 +29,7 @@ TEST(IOTest, CachePerformance) {
     std::cout << "Time without cache: " << elapsed_time_no_cache << " ms" << std::endl;
     std::cout << "Time with cache: " << elapsed_time_with_cache << " ms" << std::endl;
 
-    std::remove(file_path.c_str());
+//    std::remove(file_path.c_str());
     ASSERT_LT(elapsed_time_with_cache, elapsed_time_no_cache);
 }
 

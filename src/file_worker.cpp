@@ -1,12 +1,6 @@
-#include <unordered_map>
-
 #include "../include/file_worker.h"
 #include "../include/cache.h"
 
-struct FileInfo {
-    off_t current_offset;  // Смещение для данного файла
-};
-// Хранилище данных о файлах (сопоставляем fd с FileInfo)
 std::unordered_map<int, FileInfo> file_map;
 
 // Открытие файла по заданному пути файла, доступного для чтения
@@ -23,14 +17,16 @@ int lab2_open(const char *path) {
         std::cerr << "Error opening file: " << error << std::endl;
         return -1;
     }
-    // получить файловый дескриптор
+
     int fd = ::_open_osfhandle((intptr_t) file, _O_RDWR);
+    file_map[fd] = {0};
     return fd;
 }
 
 // Закрытие файла по хэндлу
 int lab2_close(int fd) {
     cache_flush(fd);
+    file_map.erase(fd);
 
     HANDLE file = (HANDLE) _get_osfhandle(fd);
     if (file == INVALID_HANDLE_VALUE) {
@@ -47,36 +43,37 @@ int lab2_close(int fd) {
 
 // Чтение данных из файла
 ssize_t lab2_read(int fd, void *buf, size_t count) {
-    off_t offset = _lseek(fd, 0, SEEK_CUR);
+    off_t offset = file_map[fd].current_offset;
     cache_read(fd, offset, (char *) buf, count);
-    _lseek(fd, offset + count, SEEK_SET);
+    file_map[fd].current_offset += count;
     return count;
 }
 
 // Запись данных в файл
 ssize_t lab2_write(int fd, const void *buf, size_t count) {
-    off_t offset = _lseek(fd, 0, SEEK_CUR);  // Получаем текущий offset
-    if (offset == -1) return -1;
+    off_t offset = file_map[fd].current_offset;
     cache_write(fd, offset, (const char *) buf, count);
-    _lseek(fd, count, SEEK_CUR);
+    file_map[fd].current_offset += count;
     return count;
 }
 
 // Перестановка позиции указателя на данные файла
 off_t lab2_lseek(int fd, off_t offset, int whence) {
-    off_t new_offset = _lseek(fd, offset, whence);
-    if (new_offset == -1) {
-        std::cerr << "Error: lseek failed for fd " << fd << " with offset " << offset << std::endl;
+    if (whence != SEEK_SET) {
+        std::cerr << "Error: Only SEEK_SET is supported" << std::endl;
+        return -1;
     }
 
-    return new_offset;
-//    if (whence == SEEK_SET) {
-//        // Устанавливаем позицию указателя на абсолютное смещение
-//        file_map[fd].current_offset = offset;
-//    } else {
-//        return -1;  // Не поддерживается других флагов
-//    }
-//    return file_map[fd].current_offset; // Возвращаем новое смещение
+    // Проверяем, существует ли файл в нашей карте
+    if (file_map.find(fd) == file_map.end()) {
+        std::cerr << "Error: Invalid file descriptor" << std::endl;
+        return -1;
+    }
+
+    // Устанавливаем новое смещение в кэше
+    file_map[fd].current_offset = offset;
+
+    return offset;  // Возвращаем новое смещение
 }
 
 // Синхронизация данных из кэша с диском

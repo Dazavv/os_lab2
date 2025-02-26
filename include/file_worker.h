@@ -10,6 +10,14 @@
 #include <io.h>
 #include <fcntl.h>
 #include <vector>
+#include <unordered_map>
+
+struct FileInfo {
+    off_t current_offset;  // Смещение для данного файла
+};
+
+// Хранилище данных о файлах (сопоставляем fd с FileInfo)
+extern std::unordered_map<int, FileInfo> file_map;
 
 int lab2_open(const char *path);
 int lab2_close(int fd);
