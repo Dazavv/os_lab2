@@ -30,6 +30,13 @@ add_executable(io_lat_write_w_cash
         src/tools.cpp
 
 )
+add_executable(test_c
+        src/tests/test.cpp
+        src/file_worker.cpp
+        src/cache.cpp
+        src/tools.cpp
+
+)
 add_executable(io_lat_write
         src/io_lat_write.cpp
 )

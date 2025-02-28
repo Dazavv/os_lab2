@@ -5,7 +5,7 @@
 #include <cstdio>
 
 #include "../../include/file_worker.h"
-#include "../../include/cache.h"
+#include "../../include/tools.h"
 #include "../../include/io_lat_write.h"
 
 
@@ -29,6 +29,7 @@ TEST(IOTest, CachePerformance) {
     std::cout << "Time without cache: " << elapsed_time_no_cache << " ms" << std::endl;
     std::cout << "Time with cache: " << elapsed_time_with_cache << " ms" << std::endl;
 
+    clear_cache();
     std::remove(file_path.c_str());
     ASSERT_LT(elapsed_time_with_cache, elapsed_time_no_cache);
 }
