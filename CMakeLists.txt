@@ -18,25 +18,19 @@ add_executable(tests
         src/tests/test_cache.cpp
         src/tests/test_file_worker.cpp
         src/tests/test_io_lat_write.cpp
-        src/io_lat_write_w_cash.cpp
+        src/io_lat_write_w_cache.cpp
         src/io_lat_write.cpp
         src/file_worker.cpp
         src/tools.cpp)
 
-add_executable(io_lat_write_w_cash
-        src/io_lat_write_w_cash.cpp
+add_executable(io_lat_write_w_cache
+        src/io_lat_write_w_cache.cpp
         src/file_worker.cpp
         src/cache.cpp
         src/tools.cpp
 
 )
-add_executable(test_c
-        src/tests/test.cpp
-        src/file_worker.cpp
-        src/cache.cpp
-        src/tools.cpp
 
-)
 add_executable(io_lat_write
         src/io_lat_write.cpp
 )
